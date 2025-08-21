@@ -7,12 +7,13 @@ import pytesseract
 
 # Define GPIO pins for each Braille pins (1-6)
 cell_pins = {
-    1: [14, 15, 18, 23, 24, 25]
+    1: [25, 23, 24, 18, 14, 15]
 }
 
 # GPIO pins for Next and Back buttons
 NEXT_BUTTON_PIN = 20
 BACK_BUTTON_PIN = 21
+STOP_BUTTON_PIN = 16
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
@@ -25,6 +26,7 @@ for pins in cell_pins.values():
 # Setup navigation buttons
 GPIO.setup(NEXT_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(BACK_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(STOP_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def reset_pins():
     for pins in cell_pins.values():
@@ -123,6 +125,12 @@ def wait_for_button_press(timeout=3, debounce_time=0.05):
             if GPIO.input(BACK_BUTTON_PIN) == GPIO.LOW:
                 print("BACK button pressed.")
                 return "BACK"
+            
+        if GPIO.input(STOP_BUTTON_PIN) == GPIO.LOW:
+            time.sleep(debounce_time)
+            if GPIO.input(STOP_BUTTON_PIN) == GPIO.LOW:
+                print("STOP button pressed.")
+                return "STOP"
 
         time.sleep(0.01)
     
@@ -162,7 +170,12 @@ def main():
                 start_index += 1
             elif button == "BACK" and start_index >= 1:
                 start_index -= 1
+            elif button == "STOP":
+                print("Stopping Braille display...")
+                break # exit the while loop
             time.sleep(0.2)
+        
+            
 
             reset_pins()
             time.sleep(0.2)

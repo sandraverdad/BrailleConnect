@@ -111,7 +111,7 @@ def display_braille_matrix(braille_data, start_index):
             GPIO.output(pin, GPIO.HIGH if pattern[i] == 1 else GPIO.LOW)
         time.sleep(0.1)
 
-def wait_for_button_press(timeout=20, debounce_time=0.05):
+def wait_for_button_press(timeout=10, debounce_time=0.05):
     print("Waiting for button press or auto-next in", timeout, "seconds...")
     start_time = time.time()
 
@@ -126,7 +126,7 @@ def wait_for_button_press(timeout=20, debounce_time=0.05):
                 print("DEBUG: BACK key pressed.")
                 return "BACK"
 
-        # RPi Hardware Integration of Next and Back       
+        # RPi Hardware Integration of Next and Back
         if GPIO.input(NEXT_BUTTON_PIN) == GPIO.LOW:
             time.sleep(debounce_time)
             if GPIO.input(NEXT_BUTTON_PIN) == GPIO.LOW:
